@@ -5,7 +5,7 @@ AWS Lambda Functions.
 
 ### Motivation
 For those familiar with lambda-uploader, you will notice it works very similarly and
-event uses the underlying code to package Python lambda solutions. Lambda Uploader
+even uses the underlying code to package Python lambda solutions. Lambda Uploader
 was written when I was still new to packaging and using AWS Lambda for Python.
 Once I started building larger projects and services the lambda-uploader didn't fit
 into the workflow for anything other than packaging.
