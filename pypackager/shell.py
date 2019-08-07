@@ -45,7 +45,7 @@ def _execute(args):
     if not args.no_clean:
         pkg.clean_workspace()
 
-    obj_name = path.basename(pkg.zip_file)
+    obj_name = args.s3_key_prefix + path.basename(pkg.zip_file)
     if args.subparser_name == 'upload':
         aws_session = boto3.session.Session(region_name=args.region,
                               profile_name=args.profile_name)
@@ -107,11 +107,14 @@ def main():
     upload_parent = argparse.ArgumentParser(add_help=False)
     upload_parent.add_argument('--bucket-name', '-b', dest='bucket_name',
                                required=True,
-                               help='Destination S3 bucket for artifacts to be uploaded and read from. (Optional)')
+                               help='Destination S3 bucket for artifacts to be uploaded and read from.')
+    upload_parent.add_argument('--s3-key-prefix', '-p', dest='s3_key_prefix',
+                               help='Prefix of S3 key to use as part of full key name during upload. (Optional)',
+                               default='')
     upload_parent.add_argument('--region', '-R', dest='region',
                                help='AWS Region')
     upload_parent.add_argument('--profile-name', '-P', dest='profile_name',
-                               help='AWS Local config profile name to use with AWS operations.')
+                               help='AWS Local config profile name to use with AWS operations. (Optional)')
 
     # Upload parser
     u_parser = subparsers.add_parser('upload', help='Package and upload the parser to artifacts bucket.',
