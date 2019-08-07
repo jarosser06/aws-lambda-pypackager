@@ -1,7 +1,6 @@
 '''CLI entrypoint'''
 
 
-import argparse
 import logging
 import os
 import boto3
@@ -9,20 +8,8 @@ import boto3
 from datetime import datetime
 from os import path
 from lambda_uploader.package import build_package
-from jinja2 import Template
 
 LOG = logging.getLogger(__name__)
-
-
-def _stack_exists(client, name):
-    try:
-        resp = client.describe_stacks(
-            StackName=name,
-        )
-    except AmazonCloudFormationException:
-        return False
-
-    return True
 
 
 def _execute(args):
@@ -48,7 +35,7 @@ def _execute(args):
     obj_name = args.s3_key_prefix + path.basename(pkg.zip_file)
     if args.subparser_name == 'upload':
         aws_session = boto3.session.Session(region_name=args.region,
-                              profile_name=args.profile_name)
+                                            profile_name=args.profile_name)
 
         LOG.info("Uploading artifact to " + args.bucket_name)
         s3_client = aws_session.client('s3')
@@ -64,10 +51,11 @@ def main():
 
     import argparse
 
-    artifact_pth = path.join(os.getcwd(), 'lambda-{}.zip'.format(datetime.now().isoformat('_')))
+    artifact_pth = path.join(os.getcwd(), 'lambda-{}.zip'.format(
+        datetime.now().isoformat('_')))
 
     parser = argparse.ArgumentParser(
-        description = 'Simple opinionated way of packaging Python AWS Lambda functions.')
+        description='Simple opinionated way of packaging Python AWS Lambda functions.')
 
     package_parent = argparse.ArgumentParser(add_help=False)
     package_parent.add_argument('--artifact', '-A', dest='artifact_pth',
@@ -101,8 +89,8 @@ def main():
 
     subparsers = parser.add_subparsers(dest="subparser_name")
     # Package parser
-    p_parser = subparsers.add_parser('package', help='Package the function locally.',
-                                     parents=[package_parent])
+    subparsers.add_parser('package', help='Package the function locally.',
+                          parents=[package_parent])
 
     upload_parent = argparse.ArgumentParser(add_help=False)
     upload_parent.add_argument('--bucket-name', '-b', dest='bucket_name',
@@ -117,8 +105,8 @@ def main():
                                help='AWS Local config profile name to use with AWS operations. (Optional)')
 
     # Upload parser
-    u_parser = subparsers.add_parser('upload', help='Package and upload the parser to artifacts bucket.',
-                                     parents=[package_parent, upload_parent])
+    subparsers.add_parser('upload', help='Package and upload the parser to artifacts bucket.',
+                          parents=[package_parent, upload_parent])
 
     verbose = parser.add_mutually_exclusive_group()
     verbose.add_argument('-V', dest='loglevel', action='store_const',
