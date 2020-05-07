@@ -32,7 +32,10 @@ def _execute(args):
     if not args.no_clean:
         pkg.clean_workspace()
 
-    obj_name = args.s3_key_prefix + path.basename(pkg.zip_file)
+    if args.s3_key_prefix:
+        obj_name = args.s3_key_prefix + path.basename(pkg.zip_file)
+    else:
+        obj_name = path.basename(pkg.zipfile)
     if args.subparser_name == 'upload':
         aws_session = boto3.session.Session(region_name=args.region,
                                             profile_name=args.profile_name)
